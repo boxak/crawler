@@ -1,20 +1,34 @@
 package com.javas.crawler;
 
+import com.javas.crawler.dto.News;
+import com.javas.crawler.repository.NewsRepository;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
 @Slf4j
+@DataMongoTest
 public class CrawlingTest {
+
+    @Autowired
+    NewsRepository newsRepository;
+
     @Test
     void T1() {
         try {
@@ -36,5 +50,15 @@ public class CrawlingTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void T2() {
+        List<News> list = newsRepository.findAllByReadCheck(0);
+
+        log.info("uri : {}",list.get(0).getUri());
+        log.info("title : {}",list.get(0).getTitle());
+        log.info("contents : {}",list.get(0).getContents());
+
     }
 }
