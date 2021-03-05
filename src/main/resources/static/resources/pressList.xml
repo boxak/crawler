@@ -1,178 +1,373 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pressList>
     <press>
-        <id>001</id>
+        <oid>001</oid>
         <mediaName>연합뉴스</mediaName>
         <rootDomain>www.yna.co.kr</rootDomain>
     </press>
     <press>
-        <id>002</id>
+        <oid>002</oid>
         <mediaName>프레시안</mediaName>
         <rootDomain>www.pressian.com</rootDomain>
     </press>
     <press>
-        <id>003</id>
+        <oid>003</oid>
         <mediaName>뉴시스</mediaName>
         <rootDomain>www.newsis.com</rootDomain>
     </press>
     <press>
-        <id>004</id>
+        <oid>215</oid>
         <mediaName>한국경제TV</mediaName>
         <rootDomain>www.wowtv.co.kr</rootDomain>
     </press>
     <press>
-        <id>005</id>
+        <oid>005</oid>
         <mediaName>국민일보</mediaName>
         <rootDomain>www.kmib.co.kr</rootDomain>
     </press>
     <press>
-        <id>006</id>
+        <oid>006</oid>
         <mediaName>미디어오늘</mediaName>
         <rootDomain>www.mediatoday.co.kr</rootDomain>
     </press>
     <press>
-        <id>008</id>
+        <oid>008</oid>
         <mediaName>머니투데이</mediaName>
         <rootDomain>www.mt.co.kr</rootDomain>
     </press>
     <press>
-        <id>009</id>
+        <oid>009</oid>
         <mediaName>매일경제</mediaName>
         <rootDomain>www.mk.co.kr</rootDomain>
     </press>
     <press>
-        <id>011</id>
+        <oid>011</oid>
         <mediaName>서울경제</mediaName>
         <rootDomain>www.sedaily.com</rootDomain>
     </press>
     <press>
-        <id>014</id>
+        <oid>014</oid>
         <mediaName>파이낸셜뉴스</mediaName>
         <rootDomain>www.fnnews.com</rootDomain>
     </press>
     <press>
-        <id>015</id>
+        <oid>015</oid>
         <mediaName>한국경제</mediaName>
         <rootDomain>www.hankyung.com</rootDomain>
     </press>
     <press>
-        <id>016</id>
+        <oid>016</oid>
         <mediaName>헤럴드경제</mediaName>
         <rootDomain>biz.heraldcorp.com</rootDomain>
     </press>
     <press>
-        <id>018</id>
+        <oid>018</oid>
         <mediaName>이데일리</mediaName>
         <rootDomain>www.edaily.co.kr</rootDomain>
     </press>
     <press>
-        <id>019</id>
+        <oid>019</oid>
         <mediaName>MBN</mediaName>
         <rootDomain>www.mbn.co.kr</rootDomain>
     </press>
     <press>
-        <id>020</id>
+        <oid>020</oid>
         <mediaName>동아일보</mediaName>
         <rootDomain>www.donga.com</rootDomain>
     </press>
     <press>
-        <id>021</id>
+        <oid>021</oid>
         <mediaName>문화일보</mediaName>
         <rootDomain>www.munhwa.com</rootDomain>
     </press>
     <press>
-        <id>022</id>
+        <oid>022</oid>
         <mediaName>세계일보</mediaName>
         <rootDomain>www.segye.com</rootDomain>
     </press>
     <press>
-        <id>023</id>
+        <oid>023</oid>
         <mediaName>조선일보</mediaName>
         <rootDomain>www.chosun.com</rootDomain>
     </press>
     <press>
-        <id>024</id>
+        <oid>024</oid>
         <mediaName>매경이코노미</mediaName>
         <rootDomain>news.mk.co.kr/v2/economy</rootDomain>
     </press>
     <press>
-        <id>025</id>
+        <oid>025</oid>
         <mediaName>중앙일보</mediaName>
         <rootDomain>joongang.joins.com</rootDomain>
     </press>
     <press>
-        <id>028</id>
+        <oid>028</oid>
         <mediaName>한겨레</mediaName>
         <rootDomain>www.hani.co.kr</rootDomain>
     </press>
     <press>
-        <id>029</id>
+        <oid>029</oid>
         <mediaName>디지털타임즈</mediaName>
         <rootDomain>www.dt.co.kr</rootDomain>
     </press>
     <press>
-        <id>030</id>
+        <oid>030</oid>
         <mediaName>전자신문</mediaName>
         <rootDomain>www.etnews.com</rootDomain>
     </press>
     <press>
-        <id>031</id>
+        <oid>031</oid>
         <mediaName>아이뉴스24</mediaName>
         <rootDomain>www.inews24.com</rootDomain>
     </press>
     <press>
-        <id>032</id>
+        <oid>032</oid>
         <mediaName>경향신문</mediaName>
         <rootDomain>www.khan.co.kr</rootDomain>
     </press>
     <press>
-        <id>033</id>
+        <oid>033</oid>
         <mediaName>주간경향</mediaName>
         <rootDomain>weekly.khan.co.kr</rootDomain>
     </press>
     <press>
-        <id>036</id>
+        <oid>036</oid>
         <mediaName>한겨레21</mediaName>
         <rootDomain>h21.hani.co.kr</rootDomain>
     </press>
     <press>
-        <id>037</id>
+        <oid>037</oid>
         <mediaName>주간동아</mediaName>
         <rootDomain>weekly.donga.com</rootDomain>
     </press>
     <press>
-        <id>047</id>
+        <oid>047</oid>
         <mediaName>오마이뉴스</mediaName>
         <rootDomain>www.ohmynews.com</rootDomain>
     </press>
     <press>
-        <id>050</id>
+        <oid>050</oid>
         <mediaName>한경비즈니스</mediaName>
         <rootDomain>magazine.hankyung.com</rootDomain>
     </press>
     <press>
-        <id>052</id>
+        <oid>052</oid>
         <mediaName>YTN</mediaName>
         <rootDomain>www.ytn.co.kr</rootDomain>
     </press>
     <press>
-        <id>053</id>
+        <oid>053</oid>
         <mediaName>주간조선</mediaName>
         <rootDomain>weekly.chosun.com</rootDomain>
     </press>
     <press>
-        <id>055</id>
+        <oid>055</oid>
         <mediaName>SBS</mediaName>
         <rootDomain>news.sbs.co.kr</rootDomain>
     </press>
     <press>
-        <id>056</id>
+        <oid>056</oid>
         <mediaName>KBS</mediaName>
         <rootDomain>news.kbs.co.kr</rootDomain>
     </press>
     <press>
-        <id>057</id>
+        <oid>057</oid>
         <mediaName>MBN</mediaName>
         <rootDomain>www.mbn.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>064</oid>
+        <mediaName>네이버스포츠</mediaName>
+        <rootDomain>sports.news.naver.com</rootDomain>
+    </press>
+    <press>
+        <oid>065</oid>
+        <mediaName>점프볼</mediaName>
+        <rootDomain>www.jumpball.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>076</oid>
+        <mediaName>스포츠조선</mediaName>
+        <rootDomain>sports.chosun.com</rootDomain>
+    </press>
+    <press>
+        <oid>079</oid>
+        <mediaName>노컷뉴스</mediaName>
+        <rootDomain>www.nocutnews.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>081</oid>
+        <mediaName>서울신문</mediaName>
+        <rootDomain>www.seoul.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>079</oid>
+        <mediaName>노컷뉴스</mediaName>
+        <rootDomain>www.nocutnews.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>469</oid>
+        <mediaName>한국일보</mediaName>
+        <rootDomain>www.hankookilbo.com</rootDomain>
+    </press>
+    <press>
+        <oid>421</oid>
+        <mediaName>뉴스1</mediaName>
+        <rootDomain>www.news1.kr</rootDomain>
+    </press>
+    <press>
+        <oid>422</oid>
+        <mediaName>연합뉴스TV</mediaName>
+        <rootDomain>www.yonhapnewstv.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>449</oid>
+        <mediaName>채널A</mediaName>
+        <rootDomain>www.ichannela.com</rootDomain>
+    </press>
+    <press>
+        <oid>437</oid>
+        <mediaName>JTBC</mediaName>
+        <rootDomain>news.jtbc.joins.com</rootDomain>
+    </press>
+    <press>
+        <oid>437</oid>
+        <mediaName>JTBC</mediaName>
+        <rootDomain>news.jtbc.joins.com</rootDomain>
+    </press>
+    <press>
+        <oid>214</oid>
+        <mediaName>MBC</mediaName>
+        <rootDomain>imnews.imbc.com</rootDomain>
+    </press>
+    <press>
+        <oid>374</oid>
+        <mediaName>SBS Biz</mediaName>
+        <rootDomain>biz.sbs.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>448</oid>
+        <mediaName>TV조선</mediaName>
+        <rootDomain>www.tvchosun.com</rootDomain>
+    </press>
+    <press>
+        <oid>277</oid>
+        <mediaName>아시아경제</mediaName>
+        <rootDomain>www.asiae.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>366</oid>
+        <mediaName>조선비즈</mediaName>
+        <rootDomain>biz.chosun.com</rootDomain>
+    </press>
+    <press>
+        <oid>277</oid>
+        <mediaName>아시아경제</mediaName>
+        <rootDomain>www.asiae.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>123</oid>
+        <mediaName>조세일보</mediaName>
+        <rootDomain>www.joseilbo.com</rootDomain>
+    </press>
+    <press>
+        <oid>629</oid>
+        <mediaName>더팩트</mediaName>
+        <rootDomain>www.tf.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>119</oid>
+        <mediaName>데일리안</mediaName>
+        <rootDomain>www.dailian.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>417</oid>
+        <mediaName>머니S</mediaName>
+        <rootDomain>moneys.mt.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>138</oid>
+        <mediaName>디지털데일리</mediaName>
+        <rootDomain>www.ddaily.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>092</oid>
+        <mediaName>ZDNet Korea</mediaName>
+        <rootDomain>zdnet.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>145</oid>
+        <mediaName>레이디경향</mediaName>
+        <rootDomain>lady.khan.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>308</oid>
+        <mediaName>시사IN</mediaName>
+        <rootDomain>www.sisain.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>586</oid>
+        <mediaName>시사저널</mediaName>
+        <rootDomain>www.sisajournal.com</rootDomain>
+    </press>
+    <press>
+        <oid>262</oid>
+        <mediaName>신동아</mediaName>
+        <rootDomain>shindonga.donga.com</rootDomain>
+    </press>
+    <press>
+        <oid>243</oid>
+        <mediaName>이코노미스트</mediaName>
+        <rootDomain>jmagazine.joins.com/economist?cloc=joongang-home-jmnet</rootDomain>
+    </press>
+    <press>
+        <oid>353</oid>
+        <mediaName>중앙SUNDAY</mediaName>
+        <rootDomain>news.joins.com/sunday</rootDomain>
+    </press>
+    <press>
+        <oid>127</oid>
+        <mediaName>기자협회보</mediaName>
+        <rootDomain>www.journalist.or.kr</rootDomain>
+    </press>
+    <press>
+        <oid>607</oid>
+        <mediaName>뉴스타파</mediaName>
+        <rootDomain>newstapa.org</rootDomain>
+    </press>
+    <press>
+        <oid>584</oid>
+        <mediaName>동아사이언스</mediaName>
+        <rootDomain>dongascience.donga.com</rootDomain>
+    </press>
+    <press>
+        <oid>310</oid>
+        <mediaName>여성신문</mediaName>
+        <rootDomain>www.womennews.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>296</oid>
+        <mediaName>코메디닷컴</mediaName>
+        <rootDomain>kormedi.com</rootDomain>
+    </press>
+    <press>
+        <oid>346</oid>
+        <mediaName>헬스조선</mediaName>
+        <rootDomain>health.chosun.com</rootDomain>
+    </press>
+    <press>
+        <oid>087</oid>
+        <mediaName>강원일보</mediaName>
+        <rootDomain>www.kwnews.co.kr</rootDomain>
+    </press>
+    <press>
+        <oid>088</oid>
+        <mediaName>매일신문</mediaName>
+        <rootDomain>news.imaeil.com</rootDomain>
+    </press>
+    <press>
+        <oid>082</oid>
+        <mediaName>부산일보</mediaName>
+        <rootDomain>www.busan.com</rootDomain>
     </press>
 </pressList>
