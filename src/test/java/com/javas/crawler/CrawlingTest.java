@@ -61,4 +61,10 @@ public class CrawlingTest {
         log.info("contents : {}",list.get(0).getContents());
 
     }
+
+    //형태소 분석 테스트
+    @Test
+    void T3() {
+
+    }
 }
