@@ -2,25 +2,18 @@ package com.javas.crawler;
 
 import com.javas.crawler.dto.News;
 import com.javas.crawler.repository.NewsRepository;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @DataMongoTest
@@ -39,12 +32,32 @@ public class CrawlingTest {
             String title = document.select("meta[property^=og:title]").get(0).attr("content");
             String summary = document.select(".media_end_summary").get(0).text();
             String content = document.select("._article_body_contents").get(0).text();
+            String pubDate = document.select(".t11").get(0).text();
+            String mediaName = document.select(".press_logo").select("img").attr("title");
+            String rootDomain = document.select(".press_logo").select("a").attr("href");
 
             content = content.replaceFirst(summary,"");
 
             log.info("title : {}",title);
             log.info("summary : {}",summary);
             log.info("content : {}",content);
+            log.info("pubDate : {}",pubDate);
+            log.info("mediaName : {}",mediaName);
+            log.info("rootDomain : {}",rootDomain);
+
+            News news = new News();
+            news.setTitle(title);
+            news.setSummary(summary);
+            news.setContent(content);
+            news.setMediaName(mediaName);
+            news.setUri(url);
+            news.setRootDomain(rootDomain);
+            news.setPubDate(pubDate);
+            news.setRegDate(new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
+            news.setReadCheck(0);
+
+            newsRepository.insert(news);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -58,13 +71,7 @@ public class CrawlingTest {
 
         log.info("uri : {}",list.get(0).getUri());
         log.info("title : {}",list.get(0).getTitle());
-        log.info("contents : {}",list.get(0).getContents());
-
-    }
-
-    //형태소 분석 테스트
-    @Test
-    void T3() {
+        log.info("contents : {}",list.get(0).getContent());
 
     }
 }

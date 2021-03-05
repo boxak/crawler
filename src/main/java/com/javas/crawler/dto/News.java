@@ -17,40 +17,31 @@ public class News {
   String _id;
 
   @Nullable
-  String age;
+  String title;
 
   @Nullable
-  String category;
+  String content;
 
   @Nullable
-  String contents;
-
-  @Nullable
-  String likeCount;
+  String summary;
 
   @Nullable
   String mediaName;
 
   @Nullable
-  String modDate;
-
-  int readCheck;
+  String uri;
 
   @Nullable
-  String regDate;
+  String category;
 
   @Nullable
   String rootDomain;
 
   @Nullable
-  String sex;
+  String pubDate;
 
   @Nullable
-  String title;
+  String regDate;
 
-  @Nullable
-  String uri;
-
-  @Nullable
-  String wordCount;
+  int readCheck;
 }
