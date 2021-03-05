@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -16,6 +17,7 @@ public class News {
   @Nullable
   String _id;
 
+  @Indexed(unique = false)
   @Nullable
   String title;
 
@@ -25,15 +27,18 @@ public class News {
   @Nullable
   String summary;
 
+  @Indexed(unique = false)
   @Nullable
   String mediaName;
 
+  @Indexed(unique = true)
   @Nullable
   String uri;
 
   @Nullable
   String category;
 
+  @Indexed(unique = false)
   @Nullable
   String rootDomain;
 
