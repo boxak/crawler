@@ -26,7 +26,7 @@ public class CrawlingTest {
     void T1() {
         try {
 
-            String url ="https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=003&aid=0010373956";
+            String url ="https://news.naver.com/main/read.nhn?mode=LS2D&mid=shm&sid1=102&sid2=276&oid=022&aid=0003558477";
 
             Document document = Jsoup.connect(url).get();
             String title = document.select("meta[property^=og:title]").get(0).attr("content");
