@@ -31,6 +31,18 @@ public class News {
   @Nullable
   String mediaName;
 
+  @Nullable
+  String sid1;
+
+  @Nullable
+  String sid2;
+
+  @Nullable
+  String class1;
+
+  @Nullable
+  String class2;
+
   @Indexed(unique = true)
   @Nullable
   String uri;

@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Import(MongoDBConfig.class)
 public interface NewsRepository extends MongoRepository<News, String> {
   List<News> findAllByReadCheck(int read);
+  boolean existsByUri(String url);
 }

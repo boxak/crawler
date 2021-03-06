@@ -22,10 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @DataMongoTest
@@ -153,8 +150,8 @@ public class CrawlingTest {
 
                 tempMap2.put("class1",tempMap1.get("class1"));
                 tempMap2.put("class2",tempMap1.get("class2"));
-                tempMap2.put("sid2",tempMap1.get("sid2"));
-                map.put(String.valueOf(tempMap1.get("sid1")),tempMap2);
+                tempMap2.put("sid1",tempMap1.get("sid1"));
+                map.put(String.valueOf(tempMap1.get("sid2")),tempMap2);
             }
 
             log.info(map.toString());
@@ -162,5 +159,13 @@ public class CrawlingTest {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void T5() {
+        Calendar calendar = Calendar.getInstance();
+        log.info(new SimpleDateFormat("YYYYMMdd").format(calendar.getTime()));
+        calendar.add(Calendar.DATE,-1);
+        log.info(new SimpleDateFormat("YYYYMMdd").format(calendar.getTime()));
     }
 }
