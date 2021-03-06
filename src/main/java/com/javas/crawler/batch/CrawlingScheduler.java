@@ -13,6 +13,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -41,6 +43,9 @@ public class CrawlingScheduler {
 
     @Autowired
     NewsRepository newsRepository;
+
+    @Autowired
+    CacheManager cacheManager;
 
     static boolean flag = false;
 
@@ -76,23 +81,30 @@ public class CrawlingScheduler {
                     String news_list_url = String.format(news_list_url_format,
                             sid1, sid2, date, page);
                     log.info(news_list_url);
-                    Document document = Jsoup.connect(news_list_url).get();
-                    String[] arr = new String[]{".type06_headline", ".type06"};
-                    for (String str : arr) {
-                        Elements newsList = document.select(str);
-                        if (!ObjectUtils.isEmpty(newsList)) {
-                            newsList = newsList.select("li");
-                        }
-                        for (Element elem : newsList) {
-                            Elements aElems = elem.select("a");
-                            if (!ObjectUtils.isEmpty(aElems)) {
-                                String href = aElems.get(0).attr("href");
-                                log.info(href);
-                                repeatCnt++;
-                                log.info(String.valueOf(repeatCnt));
-                                getNewsInfo(href, sid1, sid2, class1, class2);
+                    Cache cache = cacheManager.getCache("newsListCache");
+                    Document document = null;
+                    if (ObjectUtils.isEmpty(cache.get(news_list_url))) {
+                        document = Jsoup.connect(news_list_url).get();
+                        String[] arr = new String[]{".type06_headline", ".type06"};
+                        for (String str : arr) {
+                            Elements newsList = document.select(str);
+                            if (!ObjectUtils.isEmpty(newsList)) {
+                                newsList = newsList.select("li");
+                            }
+                            for (Element elem : newsList) {
+                                Elements aElems = elem.select("a");
+                                if (!ObjectUtils.isEmpty(aElems)) {
+                                    String href = aElems.get(0).attr("href");
+                                    log.info(href);
+                                    repeatCnt++;
+                                    log.info(String.valueOf(repeatCnt));
+                                    getNewsInfo(href, sid1, sid2, class1, class2);
+                                }
                             }
                         }
+                    } else {
+                        document = (Document) cache.get(news_list_url).get();
+                        log.info("news list doc from cache : {}",document.toString());
                     }
                     Elements pageElems = document.getElementsByClass("nclicks(fls.page)");
                     boolean hasNextPage = false;
@@ -139,10 +151,12 @@ public class CrawlingScheduler {
         }
         long after = System.currentTimeMillis();
         flag = true;
-        log.info(String.valueOf(after - before));
+        log.info("elapsed Time is : "+String.valueOf(after - before));
     }
 
     private void getNewsInfo(String url,String sid1,String sid2, String class1, String class2) throws IOException, ParseException {
+        if (hasNewsDoc(url)) return;
+        if (newsRepository.existsByUri(url)) return;
         Pattern pattern1 = Pattern.compile("oid=[0-9]{3}");
         Matcher matcher = pattern1.matcher(url);
         String oid = "";
@@ -183,9 +197,6 @@ public class CrawlingScheduler {
         if (!ObjectUtils.isEmpty(dateElems)) {
             pubDate = dateElems.get(0).text();
         }
-
-        //url 중복검사 필요
-        if (newsRepository.existsByUri(url)) return;
 
         News news = new News();
         news.setTitle(title);
@@ -268,4 +279,24 @@ public class CrawlingScheduler {
         }
         return map;
     }
+
+    private boolean hasNewsDoc(String url) {
+        Cache cache = cacheManager.getCache("newsCache");
+        if (ObjectUtils.isEmpty(cache.get(url))) {
+            cache.put(url,url+"_value");
+            return false;
+        } else return true;
+    }
+
+//    @Cacheable(cacheNames = "newsListCache", key="#url")
+//    public Document getNewsListDoc(String url) throws IOException {
+//        log.info("-----getNewsListDoc not using cache-----");
+//        return Jsoup.connect(url).get();
+//    }
+//
+//    @Cacheable(cacheNames = "newsCache", key="#url")
+//    public Document getNewsDoc(String url) throws IOException {
+//        log.info("-----getNewsDoc not using cache----- : {}",url);
+//        return Jsoup.connect(url).get();
+//    }
 }
