@@ -3,17 +3,29 @@ package com.javas.crawler;
 import com.javas.crawler.dto.News;
 import com.javas.crawler.repository.NewsRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @DataMongoTest
@@ -21,6 +33,10 @@ public class CrawlingTest {
 
     @Autowired
     NewsRepository newsRepository;
+
+    @Qualifier("webApplicationContext")
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @Test
     void T1() {
@@ -73,5 +89,78 @@ public class CrawlingTest {
         log.info("title : {}",list.get(0).getTitle());
         log.info("contents : {}",list.get(0).getContent());
 
+    }
+
+    @Test
+    void T3() {
+        Resource resource = resourceLoader.getResource("classpath:/static/resources/pressList.json");
+        log.info(String.valueOf(resource.exists()));
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            Path path = Paths.get(resource.getURI());
+            List<String> content = Files.readAllLines(path);
+            content.forEach(str -> sb.append(str));
+
+            String jsonStr = sb.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
+            JSONObject jsonArray = (JSONObject) parser.parse(String.valueOf(jsonObject.get("pressList")));
+            JSONArray jsonArray1 = (JSONArray) parser.parse(String.valueOf(jsonArray.get("press")));
+
+            Map<String, Map<String,String>> map = new HashMap<>();
+
+            for (Object obj : jsonArray1) {
+                Map<String, String> tempMap1 = (Map<String, String>)obj;
+                String oid = tempMap1.get("oid");
+                Map<String, String> tempMap2 = new HashMap<>();
+                tempMap2.put("rootDomain",tempMap1.get("rootDomain"));
+                tempMap2.put("mediaName",tempMap1.get("mediaName"));
+                map.put(oid,tempMap2);
+            }
+
+            log.info(map.toString());
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void T4() {
+        Resource resource = resourceLoader.getResource("classpath:/static/resources/newsClassification.json");
+        log.info(String.valueOf(resource.exists()));
+        try {
+            StringBuilder sb = new StringBuilder();
+            Path path = Paths.get(resource.getURI());
+            List<String> content = Files.readAllLines(path);
+            content.forEach(str -> sb.append(str));
+
+            String jsonStr = sb.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
+            JSONObject jsonObject1 = (JSONObject) parser.parse(String.valueOf(jsonObject.get("classificationList")));
+            JSONArray jsonArray = (JSONArray) parser.parse(String.valueOf(jsonObject1.get("classification")));
+            log.info(jsonArray.toString());
+
+            Map<String,Map<String, Object>> map = new HashMap<>();
+
+            for (Object obj : jsonArray) {
+                Map<String, Object> tempMap1 = (Map<String, Object>) obj;
+                Map<String, Object> tempMap2 = new HashMap<>();
+
+                tempMap2.put("class1",tempMap1.get("class1"));
+                tempMap2.put("class2",tempMap1.get("class2"));
+                tempMap2.put("sid2",tempMap1.get("sid2"));
+                map.put(String.valueOf(tempMap1.get("sid1")),tempMap2);
+            }
+
+            log.info(map.toString());
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
