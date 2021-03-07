@@ -49,12 +49,9 @@ public class CrawlingScheduler {
 
     static boolean flag = false;
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 3000)
     @Async
     public void crawling_naver_main_news() throws IOException, ParseException {
-        if (flag) {
-            log.info("finished!!!!!!!");
-        }
         String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
                 "mode=LS2D" +
                 "&mid=shm" +
@@ -66,7 +63,6 @@ public class CrawlingScheduler {
         log.info(String.valueOf(resource.exists()));
 
         Map<String, Map<String, String>> typeMap = getClassfication();
-        long before = System.currentTimeMillis();
         for (String sid2 : typeMap.keySet()) {
             String sid1 = typeMap.get(sid2).get("sid1");
             String class1 = typeMap.get(sid2).get("class1");
@@ -74,7 +70,6 @@ public class CrawlingScheduler {
             Calendar calendar = Calendar.getInstance();
             String date = new SimpleDateFormat("YYYYMMdd").format(calendar.getTime());
             int page = 1;
-            int repeatCnt = 0;
             while (true) {
                 boolean hasNextDate = false;
                 while (true) {
@@ -96,8 +91,6 @@ public class CrawlingScheduler {
                                 if (!ObjectUtils.isEmpty(aElems)) {
                                     String href = aElems.get(0).attr("href");
                                     log.info(href);
-                                    repeatCnt++;
-                                    log.info(String.valueOf(repeatCnt));
                                     getNewsInfo(href, sid1, sid2, class1, class2);
                                 }
                             }
@@ -139,19 +132,20 @@ public class CrawlingScheduler {
                         break;
                     }
                     page++;
-                    if (repeatCnt > 200) break;
+                }
+                if (flag) {
+                    String todayStr = new SimpleDateFormat("YYYYMMdd").format(calendar.getTime());
+                    int today = Integer.parseInt(todayStr);
+                    int d = Integer.parseInt(date);
+                    if (today - d >= 2) break;
                 }
                 if (!hasNextDate) {
                     date = new SimpleDateFormat("YYYYMMdd").format(calendar.getTime());
                     break;
                 }
-                if (repeatCnt > 200) break;
             }
-            if (repeatCnt > 200) break;
         }
-        long after = System.currentTimeMillis();
         flag = true;
-        log.info("elapsed Time is : "+String.valueOf(after - before));
     }
 
     private void getNewsInfo(String url,String sid1,String sid2, String class1, String class2) throws IOException, ParseException {
@@ -287,16 +281,4 @@ public class CrawlingScheduler {
             return false;
         } else return true;
     }
-
-//    @Cacheable(cacheNames = "newsListCache", key="#url")
-//    public Document getNewsListDoc(String url) throws IOException {
-//        log.info("-----getNewsListDoc not using cache-----");
-//        return Jsoup.connect(url).get();
-//    }
-//
-//    @Cacheable(cacheNames = "newsCache", key="#url")
-//    public Document getNewsDoc(String url) throws IOException {
-//        log.info("-----getNewsDoc not using cache----- : {}",url);
-//        return Jsoup.connect(url).get();
-//    }
 }

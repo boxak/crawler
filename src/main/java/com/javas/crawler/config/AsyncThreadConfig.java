@@ -13,8 +13,8 @@ public class AsyncThreadConfig {
     @Bean
     public Executor asyncThreadTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(8);
-        threadPoolTaskExecutor.setMaxPoolSize(8);
+        threadPoolTaskExecutor.setCorePoolSize(100);
+        threadPoolTaskExecutor.setMaxPoolSize(100);
         threadPoolTaskExecutor.setThreadNamePrefix("crawler-pool");
         return threadPoolTaskExecutor;
     }
