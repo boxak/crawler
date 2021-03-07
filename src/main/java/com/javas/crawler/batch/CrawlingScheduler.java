@@ -3,6 +3,7 @@ package com.javas.crawler.batch;
 import com.javas.crawler.dto.News;
 import com.javas.crawler.repository.NewsRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -212,15 +214,18 @@ public class CrawlingScheduler {
     }
 
     private Map<String, Map<String,String>> getPressList() {
-        Resource resource = resourceLoader.getResource("classpath:/static/resources/pressList.json");
+        byte[] data;
+        //Resource resource = resourceLoader.getResource("classpath:/static/resources/pressList.json");
         Map<String, Map<String,String>> map = new HashMap<>();
-        try {
-            StringBuilder sb = new StringBuilder();
-            Path path = Paths.get(resource.getURI());
-            List<String> content = Files.readAllLines(path);
-            content.forEach(str -> sb.append(str));
+        try(InputStream in = getClass().getResourceAsStream("/static/resources/pressList.json")) {
+//            StringBuilder sb = new StringBuilder();
+//            Path path = Paths.get(resource.getURI());
+//            List<String> content = Files.readAllLines(path);
+//            content.forEach(str -> sb.append(str));
 
-            String jsonStr = sb.toString();
+            data = IOUtils.toByteArray(in);
+
+            String jsonStr = new String(data);
 
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
@@ -243,15 +248,16 @@ public class CrawlingScheduler {
     }
 
     private Map<String, Map<String, String>> getClassfication() {
-        Resource resource = resourceLoader.getResource("classpath:/static/resources/newsClassification.json");
+        byte[] data;
         Map<String,Map<String, String>> map = new HashMap<>();
-        try {
-            StringBuilder sb = new StringBuilder();
-            Path path = Paths.get(resource.getURI());
-            List<String> content = Files.readAllLines(path);
-            content.forEach(str -> sb.append(str));
+        try(InputStream in = getClass().getResourceAsStream("/static/resources/newsClassification.json")) {
+//            StringBuilder sb = new StringBuilder();
+//            Path path = Paths.get(resource.getURI());
+//            List<String> content = Files.readAllLines(path);
+//            content.forEach(str -> sb.append(str));
+            data = IOUtils.toByteArray(in);
 
-            String jsonStr = sb.toString();
+            String jsonStr = new String(data);
 
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
