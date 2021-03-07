@@ -5,7 +5,7 @@
          monitoring="autodetect"
          dynamicConfig="true">
     <cache name="newsListCache"
-           maxBytesLocalHeap="400M"
+           maxBytesLocalHeap="40M"
            eternal="true"
            overflowToDisk="false"
            timeToLiveSeconds="300"
@@ -14,7 +14,7 @@
            transactionalMode="off">
     </cache>
     <cache name="newsCache"
-           maxBytesLocalHeap="400M"
+           maxBytesLocalHeap="40M"
            eternal="true"
            overflowToDisk="false"
            timeToLiveSeconds="300"
