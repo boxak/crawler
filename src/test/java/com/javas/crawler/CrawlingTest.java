@@ -162,10 +162,14 @@ public class CrawlingTest {
     }
 
     @Test
-    void T5() {
+    void T5() throws java.text.ParseException {
+
+        String date = "20210301";
+        Date d = new SimpleDateFormat("yyyyMMdd").parse(date);
         Calendar calendar = Calendar.getInstance();
-        log.info(new SimpleDateFormat("YYYYMMdd").format(calendar.getTime()));
+        calendar.setTime(d);
+        log.info(new SimpleDateFormat("yyyyMMdd").format(calendar.getTime()));
         calendar.add(Calendar.DATE,-1);
-        log.info(new SimpleDateFormat("YYYYMMdd").format(calendar.getTime()));
+        log.info(new SimpleDateFormat("yyyyMMdd").format(calendar.getTime()));
     }
 }

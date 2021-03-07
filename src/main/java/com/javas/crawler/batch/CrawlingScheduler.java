@@ -26,11 +26,11 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,8 +52,8 @@ public class CrawlingScheduler {
     static boolean flag = false;
 
     @Scheduled(fixedDelay = 3000)
-    @Async
-    public void crawling_naver_main_news() throws IOException, ParseException {
+    @Async("asyncThreadTaskExecutor")
+    public void crawling_naver_main_news() throws IOException, ParseException, java.text.ParseException {
         String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
                 "mode=LS2D" +
                 "&mid=shm" +
@@ -70,7 +70,7 @@ public class CrawlingScheduler {
             String class1 = typeMap.get(sid2).get("class1");
             String class2 = typeMap.get(sid2).get("class2");
             Calendar calendar = Calendar.getInstance();
-            String date = new SimpleDateFormat("YYYYMMdd").format(calendar.getTime());
+            String date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
             int page = 1;
             while (true) {
                 boolean hasNextDate = false;
@@ -127,7 +127,10 @@ public class CrawlingScheduler {
                                 int date1 = Integer.parseInt(matcher.group());
                                 if (date1 < curDate) {
                                     hasNextDate = true;
-                                    date = String.valueOf(curDate-1);
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTime(new SimpleDateFormat("yyyyMMdd").parse(date));
+                                    cal.add(Calendar.DAY_OF_MONTH,-1);
+                                    date = new SimpleDateFormat("yyyyMMdd").format(cal.getTime());
                                 }
                             }
                         }
@@ -136,13 +139,13 @@ public class CrawlingScheduler {
                     page++;
                 }
                 if (flag) {
-                    String todayStr = new SimpleDateFormat("YYYYMMdd").format(calendar.getTime());
+                    String todayStr = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
                     int today = Integer.parseInt(todayStr);
                     int d = Integer.parseInt(date);
                     if (today - d >= 2) break;
                 }
                 if (!hasNextDate) {
-                    date = new SimpleDateFormat("YYYYMMdd").format(calendar.getTime());
+                    date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
                     break;
                 }
             }
@@ -206,7 +209,7 @@ public class CrawlingScheduler {
         news.setSid2(sid2);
         news.setClass1(class1);
         news.setClass2(class2);
-        news.setRegDate(new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
+        news.setRegDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         news.setReadCheck(0);
 
         newsRepository.save(news);
