@@ -1,6 +1,8 @@
 package com.javas.crawler.batch;
 
 import com.javas.crawler.dto.News;
+import com.javas.crawler.dto.NewsList;
+import com.javas.crawler.repository.NewsListRepository;
 import com.javas.crawler.repository.NewsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -76,7 +78,7 @@ public class CrawlingScheduler {
                 boolean hasNextDate = false;
                 while (true) {
                     String news_list_url = String.format(news_list_url_format,
-                            sid1, sid2, date, page);
+                        sid1, sid2, date, page);
                     log.info(news_list_url);
                     Cache cache = cacheManager.getCache("newsListCache");
                     Document document = null;
@@ -125,7 +127,7 @@ public class CrawlingScheduler {
                             if (matcher.find()) {
                                 int curDate = Integer.parseInt(date);
                                 int date1 = Integer.parseInt(matcher.group());
-                                if (date1 < curDate) {
+                                if (date1 < curDate && curDate>20210101) {
                                     hasNextDate = true;
                                     Calendar cal = Calendar.getInstance();
                                     cal.setTime(new SimpleDateFormat("yyyyMMdd").parse(date));
