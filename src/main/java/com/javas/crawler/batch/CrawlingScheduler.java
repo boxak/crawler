@@ -1,8 +1,6 @@
 package com.javas.crawler.batch;
 
 import com.javas.crawler.dto.News;
-import com.javas.crawler.dto.NewsList;
-import com.javas.crawler.repository.NewsListRepository;
 import com.javas.crawler.repository.NewsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
