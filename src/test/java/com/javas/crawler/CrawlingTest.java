@@ -3,110 +3,236 @@ package com.javas.crawler;
 import com.javas.crawler.dto.News;
 import com.javas.crawler.repository.NewsRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @DataMongoTest
 public class CrawlingTest {
 
-    @Autowired
-    NewsRepository newsRepository;
-
     @Qualifier("webApplicationContext")
     @Autowired
     ResourceLoader resourceLoader;
 
-    @Test
-    void T1() {
-        try {
+    @Autowired
+    NewsRepository newsRepository;
 
-            String url ="https://news.naver.com/main/read.nhn?mode=LS2D&mid=shm&sid1=102&sid2=276&oid=022&aid=0003558477";
+    @Autowired
+    CacheManager cacheManager;
 
-            Document document = Jsoup.connect(url).get();
-            String title = document.select("meta[property^=og:title]").get(0).attr("content");
-            String summary = document.select(".media_end_summary").get(0).text();
-            String content = document.select("._article_body_contents").get(0).text();
-            String pubDate = document.select(".t11").get(0).text();
-            String mediaName = document.select(".press_logo").select("img").attr("title");
-            String rootDomain = document.select(".press_logo").select("a").attr("href");
-
-            content = content.replaceFirst(summary,"");
-
-            log.info("title : {}",title);
-            log.info("summary : {}",summary);
-            log.info("content : {}",content);
-            log.info("pubDate : {}",pubDate);
-            log.info("mediaName : {}",mediaName);
-            log.info("rootDomain : {}",rootDomain);
-
-            News news = new News();
-            news.setTitle(title);
-            news.setSummary(summary);
-            news.setContent(content);
-            news.setMediaName(mediaName);
-            news.setUri(url);
-            news.setRootDomain(rootDomain);
-            news.setPubDate(pubDate);
-            news.setRegDate(new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
-            news.setReadCheck(0);
-
-            newsRepository.insert(news);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    static boolean flag = false;
 
     @Test
-    void T2() {
-        List<News> list = newsRepository.findAllByReadCheck(0);
-
-        log.info("uri : {}",list.get(0).getUri());
-        log.info("title : {}",list.get(0).getTitle());
-        log.info("contents : {}",list.get(0).getContent());
-
-    }
-
-    @Test
-    void T3() {
-        Resource resource = resourceLoader.getResource("classpath:/static/resources/pressList.json");
+    @Async("asyncThreadTaskExecutor")
+    public void crawling_naver_main_news() throws IOException, ParseException, java.text.ParseException {
+        String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
+                "mode=LS2D" +
+                "&mid=shm" +
+                "&sid1=%s" +
+                "&sid2=%s"+
+                "&date=%s"+
+                "&page=%d";
+        Resource resource = resourceLoader.getResource("classpath:/static/resources/newsClassification.json");
         log.info(String.valueOf(resource.exists()));
 
-        try {
-            StringBuilder sb = new StringBuilder();
-            Path path = Paths.get(resource.getURI());
-            List<String> content = Files.readAllLines(path);
-            content.forEach(str -> sb.append(str));
+        Map<String, Map<String, String>> typeMap = getClassfication();
+        for (String sid2 : typeMap.keySet()) {
+            String sid1 = typeMap.get(sid2).get("sid1");
+            String class1 = typeMap.get(sid2).get("class1");
+            String class2 = typeMap.get(sid2).get("class2");
+            if (!"정치".equals(class1)) continue;
+            Calendar calendar = Calendar.getInstance();
+            String date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
+            int page = 1;
+            while (true) {
+                boolean hasNextDate = false;
+                while (true) {
+                    String news_list_url = String.format(news_list_url_format,
+                            sid1, sid2, date, page);
+                    log.info(news_list_url);
+                    Cache cache = cacheManager.getCache("newsListCache");
+                    Document document = null;
+                    if (ObjectUtils.isEmpty(cache.get(news_list_url))) {
+                        document = Jsoup.connect(news_list_url).get();
+                        String[] arr = new String[]{".type06_headline", ".type06"};
+                        for (String str : arr) {
+                            Elements newsList = document.select(str);
+                            if (!ObjectUtils.isEmpty(newsList)) {
+                                newsList = newsList.select("li");
+                            }
+                            for (Element elem : newsList) {
+                                Elements aElems = elem.select("a");
+                                if (!ObjectUtils.isEmpty(aElems)) {
+                                    String href = aElems.get(0).attr("href");
+                                    log.info(href);
+                                    getNewsInfo(href, sid1, sid2, class1, class2);
+                                }
+                            }
+                        }
+                    } else {
+                        document = (Document) cache.get(news_list_url).get();
+                        log.info("news list doc from cache : {}",document.toString());
+                    }
+                    Elements pageElems = document.getElementsByClass("nclicks(fls.page)");
+                    boolean hasNextPage = false;
+                    if (!ObjectUtils.isEmpty(pageElems)) {
+                        String lastPageStr = pageElems.last().text();
+                        if (!"다음".equals(lastPageStr) && !"이전".equals(lastPageStr)) {
+                            int lastPage = Integer.parseInt(pageElems.last().text());
+                            if (lastPage > page) {
+                                hasNextPage = true;
+                            }
+                        } else if("다음".equals(lastPageStr)) {
+                            hasNextPage = true;
+                        }
+                    }
+                    if (!hasNextPage) {
+                        page = 1;
+                        Elements dateElems = document.getElementsByClass("nclicks(fls.date)");
+                        if (!ObjectUtils.isEmpty(dateElems)) {
+                            Element dateElem = dateElems.last();
+                            String preDate = dateElem.attr("href");
+                            Pattern pattern = Pattern.compile("[0-9]{8}");
+                            Matcher matcher = pattern.matcher(preDate);
+                            if (matcher.find()) {
+                                int curDate = Integer.parseInt(date);
+                                int date1 = Integer.parseInt(matcher.group());
+                                if (date1 < curDate && curDate>20210101) {
+                                    hasNextDate = true;
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTime(new SimpleDateFormat("yyyyMMdd").parse(date));
+                                    cal.add(Calendar.DAY_OF_MONTH,-1);
+                                    date = new SimpleDateFormat("yyyyMMdd").format(cal.getTime());
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    page++;
+                }
+                if (flag) {
+                    String todayStr = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
+                    int today = Integer.parseInt(todayStr);
+                    int d = Integer.parseInt(date);
+                    if (today!=d) break;
+                }
+                if (!hasNextDate) {
+                    date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
+                    break;
+                }
+            }
+        }
+        flag = true;
+    }
 
-            String jsonStr = sb.toString();
+    private void getNewsInfo(String url,String sid1,String sid2, String class1, String class2) throws IOException, ParseException {
+        if (hasNewsDoc(url)) return;
+        if (newsRepository.existsByUri(url)) return;
+        Pattern pattern1 = Pattern.compile("oid=[0-9]{3}");
+        Matcher matcher = pattern1.matcher(url);
+        String oid = "";
+        if (matcher.find()) {
+            String str = matcher.group();
+            oid = str.substring(4);
+        }
+
+        Map<String, Map<String, String>> pressMap = getPressList();
+        String mediaName = "";
+        String rootDomain = "";
+        if (pressMap.containsKey(oid)) {
+            mediaName = pressMap.get(oid).get("mediaName");
+            rootDomain = pressMap.get(oid).get("rootDomain");
+        }
+        url = "https://news.naver.com/main/read.naver?mode=LSD&mid=shm&sid1=100&oid=277&aid=0004949978";
+        Document document = Jsoup.connect(url).get();
+
+        String title = "";
+        String summary = "";
+        String content = "";
+        String pubDate = "";
+
+        Elements titleElems = document.select("meta[property^=og:title]");
+        Elements summaryElems = document.select(".media_end_summary");
+        Elements contentElems = document.select("._article_body_contents");
+        Elements dateElems = document.select(".t11");
+
+        if (!ObjectUtils.isEmpty(titleElems)) {
+            title = titleElems.get(0).attr("content");
+        }
+        if (!ObjectUtils.isEmpty(summaryElems)) {
+            summary = summaryElems.get(0).text();
+        }
+        if (!ObjectUtils.isEmpty(contentElems)) {
+            content = contentElems.get(0).text();
+        }
+        if (!ObjectUtils.isEmpty(dateElems)) {
+            pubDate = dateElems.get(0).text();
+        }
+
+        News news = new News();
+        news.setTitle(title);
+        news.setSummary(summary);
+        news.setContent(content);
+        news.setMediaName(mediaName);
+        news.setUri(url);
+        news.setRootDomain(rootDomain);
+        news.setPubDate(pubDate);
+        news.setSid1(sid1);
+        news.setSid2(sid2);
+        news.setClass1(class1);
+        news.setClass2(class2);
+        news.setRegDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        news.setReadCheck(0);
+
+        newsRepository.save(news);
+
+    }
+
+    private Map<String, Map<String,String>> getPressList() {
+        byte[] data;
+        //Resource resource = resourceLoader.getResource("classpath:/static/resources/pressList.json");
+        Map<String, Map<String,String>> map = new HashMap<>();
+        try(InputStream in = getClass().getResourceAsStream("/static/resources/pressList.json")) {
+//            StringBuilder sb = new StringBuilder();
+//            Path path = Paths.get(resource.getURI());
+//            List<String> content = Files.readAllLines(path);
+//            content.forEach(str -> sb.append(str));
+
+            data = IOUtils.toByteArray(in);
+
+            String jsonStr = new String(data);
 
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
             JSONObject jsonArray = (JSONObject) parser.parse(String.valueOf(jsonObject.get("pressList")));
             JSONArray jsonArray1 = (JSONArray) parser.parse(String.valueOf(jsonArray.get("press")));
-
-            Map<String, Map<String,String>> map = new HashMap<>();
 
             for (Object obj : jsonArray1) {
                 Map<String, String> tempMap1 = (Map<String, String>)obj;
@@ -117,59 +243,50 @@ public class CrawlingTest {
                 map.put(oid,tempMap2);
             }
 
-            log.info(map.toString());
-
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+        return map;
     }
 
-    @Test
-    void T4() {
-        Resource resource = resourceLoader.getResource("classpath:/static/resources/newsClassification.json");
-        log.info(String.valueOf(resource.exists()));
-        try {
-            StringBuilder sb = new StringBuilder();
-            Path path = Paths.get(resource.getURI());
-            List<String> content = Files.readAllLines(path);
-            content.forEach(str -> sb.append(str));
+    private Map<String, Map<String, String>> getClassfication() {
+        byte[] data;
+        Map<String,Map<String, String>> map = new HashMap<>();
+        try(InputStream in = getClass().getResourceAsStream("/static/resources/newsClassification.json")) {
+//            StringBuilder sb = new StringBuilder();
+//            Path path = Paths.get(resource.getURI());
+//            List<String> content = Files.readAllLines(path);
+//            content.forEach(str -> sb.append(str));
+            data = IOUtils.toByteArray(in);
 
-            String jsonStr = sb.toString();
+            String jsonStr = new String(data);
 
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
             JSONObject jsonObject1 = (JSONObject) parser.parse(String.valueOf(jsonObject.get("classificationList")));
             JSONArray jsonArray = (JSONArray) parser.parse(String.valueOf(jsonObject1.get("classification")));
-            log.info(jsonArray.toString());
-
-            Map<String,Map<String, Object>> map = new HashMap<>();
 
             for (Object obj : jsonArray) {
-                Map<String, Object> tempMap1 = (Map<String, Object>) obj;
-                Map<String, Object> tempMap2 = new HashMap<>();
+                Map<String, String> tempMap1 = (Map<String, String>) obj;
+                Map<String, String> tempMap2 = new HashMap<>();
 
                 tempMap2.put("class1",tempMap1.get("class1"));
                 tempMap2.put("class2",tempMap1.get("class2"));
                 tempMap2.put("sid1",tempMap1.get("sid1"));
-                map.put(String.valueOf(tempMap1.get("sid2")),tempMap2);
+                map.put(tempMap1.get("sid2"),tempMap2);
             }
-
-            log.info(map.toString());
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+        return map;
     }
 
-    @Test
-    void T5() throws java.text.ParseException {
-
-        String date = "20210301";
-        Date d = new SimpleDateFormat("yyyyMMdd").parse(date);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(d);
-        log.info(new SimpleDateFormat("yyyyMMdd").format(calendar.getTime()));
-        calendar.add(Calendar.DATE,-1);
-        log.info(new SimpleDateFormat("yyyyMMdd").format(calendar.getTime()));
+    private boolean hasNewsDoc(String url) {
+        Cache cache = cacheManager.getCache("newsCache");
+        if (ObjectUtils.isEmpty(cache.get(url))) {
+            cache.put(url,url+"_value");
+            return false;
+        } else return true;
     }
 }
