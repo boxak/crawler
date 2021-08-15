@@ -170,7 +170,7 @@ public class CrawlingTest {
             mediaName = pressMap.get(oid).get("mediaName");
             rootDomain = pressMap.get(oid).get("rootDomain");
         }
-        url = "https://news.naver.com/main/read.naver?mode=LSD&mid=shm&sid1=100&oid=277&aid=0004949978";
+
         Document document = Jsoup.connect(url).get();
 
         String title = "";
