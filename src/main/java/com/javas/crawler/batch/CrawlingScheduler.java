@@ -51,7 +51,7 @@ public class CrawlingScheduler {
 
     static boolean flag = false;
 
-    @Scheduled(fixedDelay = 3000)
+    @Scheduled(cron = "0 0 0 * * *")
     @Async("asyncThreadTaskExecutor")
     public void crawling_naver_main_news() throws IOException, ParseException, java.text.ParseException {
         String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
@@ -70,13 +70,14 @@ public class CrawlingScheduler {
             String class1 = typeMap.get(sid2).get("class1");
             String class2 = typeMap.get(sid2).get("class2");
             Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE,-1);
             String date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
             int page = 1;
-            while (true) {
-                boolean hasNextDate = false;
+            roop1 : while (true) {
+                boolean flag = true;
                 while (true) {
                     String news_list_url = String.format(news_list_url_format,
-                        sid1, sid2, date, page);
+                            sid1, sid2, date, page);
                     log.info(news_list_url);
                     Cache cache = cacheManager.getCache("newsListCache");
                     Document document = null;
@@ -99,7 +100,7 @@ public class CrawlingScheduler {
                         }
                     } else {
                         document = (Document) cache.get(news_list_url).get();
-                        log.info("news list doc from cache : {}",document.toString());
+                        log.info("news list doc from cache : {}", document.toString());
                     }
                     Elements pageElems = document.getElementsByClass("nclicks(fls.page)");
                     boolean hasNextPage = false;
@@ -110,47 +111,17 @@ public class CrawlingScheduler {
                             if (lastPage > page) {
                                 hasNextPage = true;
                             }
-                        } else if("다음".equals(lastPageStr)) {
+                        } else if ("다음".equals(lastPageStr)) {
                             hasNextPage = true;
                         }
                     }
                     if (!hasNextPage) {
-                        page = 1;
-                        Elements dateElems = document.getElementsByClass("nclicks(fls.date)");
-                        if (!ObjectUtils.isEmpty(dateElems)) {
-                            Element dateElem = dateElems.last();
-                            String preDate = dateElem.attr("href");
-                            Pattern pattern = Pattern.compile("[0-9]{8}");
-                            Matcher matcher = pattern.matcher(preDate);
-                            if (matcher.find()) {
-                                int curDate = Integer.parseInt(date);
-                                int date1 = Integer.parseInt(matcher.group());
-                                if (date1 < curDate && curDate>20210101) {
-                                    hasNextDate = true;
-                                    Calendar cal = Calendar.getInstance();
-                                    cal.setTime(new SimpleDateFormat("yyyyMMdd").parse(date));
-                                    cal.add(Calendar.DAY_OF_MONTH,-1);
-                                    date = new SimpleDateFormat("yyyyMMdd").format(cal.getTime());
-                                }
-                            }
-                        }
-                        break;
+                        break roop1;
                     }
                     page++;
                 }
-                if (flag) {
-                    String todayStr = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
-                    int today = Integer.parseInt(todayStr);
-                    int d = Integer.parseInt(date);
-                    if (today - d >= 2) break;
-                }
-                if (!hasNextDate) {
-                    date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
-                    break;
-                }
             }
         }
-        flag = true;
     }
 
     private void getNewsInfo(String url,String sid1,String sid2, String class1, String class2) throws IOException, ParseException {

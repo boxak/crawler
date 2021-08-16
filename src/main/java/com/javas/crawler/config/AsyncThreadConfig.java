@@ -14,7 +14,7 @@ public class AsyncThreadConfig {
     public Executor asyncThreadTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(15);
-        threadPoolTaskExecutor.setMaxPoolSize(20);
+        threadPoolTaskExecutor.setMaxPoolSize(40);
         threadPoolTaskExecutor.setThreadNamePrefix("crawler-pool");
         return threadPoolTaskExecutor;
     }
