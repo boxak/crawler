@@ -2,6 +2,15 @@ package com.javas.crawler.batch;
 
 import com.javas.crawler.dto.News;
 import com.javas.crawler.repository.NewsRepository;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
@@ -24,16 +33,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Component
 @Slf4j
 @PropertySource("static/resources/batch.properties")
@@ -51,16 +50,16 @@ public class CrawlingScheduler {
 
     static boolean flag = false;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(fixedDelay = 3000)
     @Async("asyncThreadTaskExecutor")
     public void crawling_naver_main_news() throws IOException, ParseException, java.text.ParseException {
         String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
-                "mode=LS2D" +
-                "&mid=shm" +
-                "&sid1=%s" +
-                "&sid2=%s"+
-                "&date=%s"+
-                "&page=%d";
+            "mode=LS2D" +
+            "&mid=shm" +
+            "&sid1=%s" +
+            "&sid2=%s"+
+            "&date=%s"+
+            "&page=%d";
         Resource resource = resourceLoader.getResource("classpath:/static/resources/newsClassification.json");
         log.info(String.valueOf(resource.exists()));
 
@@ -77,7 +76,7 @@ public class CrawlingScheduler {
                 boolean flag = true;
                 while (true) {
                     String news_list_url = String.format(news_list_url_format,
-                            sid1, sid2, date, page);
+                        sid1, sid2, date, page);
                     log.info(news_list_url);
                     Cache cache = cacheManager.getCache("newsListCache");
                     Document document = null;
