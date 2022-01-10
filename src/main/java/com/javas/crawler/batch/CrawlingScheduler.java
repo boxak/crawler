@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Async;
@@ -35,7 +34,6 @@ import org.springframework.util.ObjectUtils;
 
 @Component
 @Slf4j
-@PropertySource("static/resources/batch.properties")
 public class CrawlingScheduler {
 
     @Qualifier("webApplicationContext")
