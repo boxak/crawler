@@ -46,8 +46,6 @@ public class CrawlingScheduler {
     @Autowired
     CacheManager cacheManager;
 
-    static boolean flag = false;
-
     @Scheduled(cron = "0/3 9 21 * * *")
     @Async("asyncThreadTaskExecutor")
     public void crawling_naver_main_news() throws IOException, ParseException, java.text.ParseException {
@@ -71,7 +69,6 @@ public class CrawlingScheduler {
             String date = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
             int page = 1;
             roop1 : while (true) {
-                boolean flag = true;
                 while (true) {
                     String news_list_url = String.format(news_list_url_format,
                         sid1, sid2, date, page);
