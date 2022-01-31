@@ -15,6 +15,22 @@ before_install:
 
 script: "./mvnw clean package -Dmaven.test.skip"
 
+before_deploy:
+  - zip -r crawler *
+  - mkdir -p deploy
+  - mv crawler.zip deploy/crawler.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: travis-ci-bucket-boxak
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private
+    local_dir: deploy
+    wait_until_deployed: true
+
 notifications:
   email:
     recipients:
