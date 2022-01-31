@@ -48,7 +48,7 @@ public class CrawlingScheduler {
 
     @Scheduled(cron = "0/3 9 21 * * *")
     @Async("asyncThreadTaskExecutor")
-    public void crawling_naver_main_news() throws IOException, ParseException, java.text.ParseException {
+    public void crawling_naver_main_news() throws IOException, ParseException {
         String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
             "mode=LS2D" +
             "&mid=shm" +
