@@ -46,7 +46,7 @@ public class CrawlingScheduler {
     @Autowired
     CacheManager cacheManager;
 
-    @Scheduled(cron = "0/3 9 21 * * *")
+    @Scheduled(cron = "0/3 0 0 * * *")
     @Async("asyncThreadTaskExecutor")
     public void crawling_naver_main_news() throws IOException, ParseException {
         String news_list_url_format = "https://news.naver.com/main/list.nhn?" +
